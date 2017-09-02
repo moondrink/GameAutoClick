@@ -1,0 +1,80 @@
+uiautomator是google官方提供，用于ui自动化测试的
+官网地址：https://developer.android.com/topic/libraries/testing-support-library/index.html
+编译需求android4.3（level-18）及以上
+
+一、使用介绍
+
+Usage:  
+adb shell uiautomator runtest AutoClick.jar
+
+二、注意事项：
+该工具使用需要手机内部含有uiautomator工具（android4.1及以上才有）
+
+三、代码结构结构如下：
+ AutoClick
+	├── build.sh
+	├── config
+	│	└── mi.txt
+	├── libs
+	├── src
+	│	└──AutoClick.java
+    ├── lib
+	│	├── android.jar
+    │   └── uiautomator.jar
+  	├── build.xml
+	└── project.properties
+	
+四、编译方法
+
+方法一：
+1.编译自动生成build.xml、project.properties和local.properties
+执行android create uitest-project -n <name> -t <android-sdk-ID> -p <project path>
+
+android-sdk-ID获取：
+执行android list，获得 id: 1 or "android-18"，则android-sdk-ID为1
+
+2.执行ant build生成jar
+
+方法二：
+需要build.xml以及project.properties
+1.设置sdk目录的环境变量ANDROID_HOME
+2.修改project.properties中的target值（android level）
+3.执行ant build生成jar
+
+
+
+本项目的编译方法：
+1.设置sdk目录的环境变量ANDROID_HOME
+2.修改project.properties中的target值（android level）
+3.用当前目录下的uibuild.xml替换sdk/tools/ant目录下的uibuild.xml
+4.执行ant build生成jar
+
+uibuild.xml相当于一般java项目的build.xml文件
+主要修改：1.将libs下的jar包打进dex   2.将config目录下的文件打进jar包
+uibuild.xml修改位置：
+增加：
+line83  <property name="config.dir" value="config" /> 
+line187-189	libs目录下jar加进编译
+			<classpath>
+            	<fileset dir="${jar.libs.dir}" includes="*.jar" />
+            </classpath>
+line191-194     config目录拷贝到输入目录       
+        <mkdir dir="${out.absolute.dir}/config" />
+        <copy todir="${out.absolute.dir}/config">
+            <fileset dir="${config.dir}"/>
+        </copy>
+line207-209    libs目录下jar加进dex    
+        <fileset dir="${jar.libs.dir}"> 
+    		<include name="*.jar" />
+    	</fileset>
+line220    config目录下文件加入jar包
+		<fileset dir="${out.absolute.dir}/config" />
+
+uiautomator编译需要android4.3（level-18）及以上
+
+获取控件具体信息需结合uiautomatorviewer,主要关注界面包名和需要点击控件的class，reousrce-id，text字段的值。
+
+本功能实现主要读取conf.json内配置好的各个控件依次查找。
+1.第一条件根据包名查找
+2.根据再classname，resourceid，text查找控件
+
