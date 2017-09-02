@@ -1,0 +1,2 @@
+# GameAutoClick
+AutoClick/readme.txt
